@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sweet Candy Shop - Loja de Doces Premium</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Sweet Candy Shop</h1>
+            <p class="subtitle">Doces artesanais, tortas especiais e muito sabor!</p>
+        </header>
+
+        <main>
+            <section class="summary-cards">
+                <div class="card">
+                    <h2>Total de Produtos</h2>
+                    <div id="total-count" class="big">0</div>
+                    <p>delícias disponíveis</p>
+                </div>
+                <div class="card">
+                    <h2>Estoque Baixo</h2>
+                    <div id="lowstock-count" class="big">0</div>
+                    <p>produtos precisando reposição</p>
+                </div>
+                <div class="card">
+                    <h2>Última Atualização</h2>
+                    <div id="last-updated" class="big">—</div>
+                    <p>sistema atualizado</p>
+                </div>
+            </section>
+
+            <section class="products-section">
+                <h2>Nossos Produtos</h2>
+
+                <div class="controls">
+                    <div class="tabs">
+                        <button class="tab-btn active" data-filter="all">Todos</button>
+                        <button class="tab-btn" data-filter="doce">Doces</button>
+                        <button class="tab-btn" data-filter="torta">Tortas</button>
+                        <button class="tab-btn" data-filter="lowstock">Estoque Baixo</button>
+                    </div>
+
+                    <div class="search">
+                        <input id="q-input" placeholder="Pesquisar por nome ou sabor..." />
+                        <button id="refresh-btn" class="tab-btn">Atualizar</button>
+                    </div>
+                </div>
+
+                <div id="products-list" class="products-list">
+                    <div class="loading">Carregando nossos doces...</div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Sweet Candy Shop — Os melhores doces da cidade desde 2025</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

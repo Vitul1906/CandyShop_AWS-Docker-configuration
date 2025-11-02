@@ -1,0 +1,11 @@
+﻿# Frontend API Dependencies - Candy Shop
+# Dependências Python necessárias para o servidor frontend
+
+# Flask: Framework web para Python
+# Versão 2.3.3 - estável e compatível com Python 3.11
+Flask==2.3.3
+
+# Requests: Biblioteca para fazer requisições HTTP
+# Versão 2.31.0 - para comunicação com a API backend
+# Usado nos endpoints proxy para conectar frontend->backend
+requests==2.31.0

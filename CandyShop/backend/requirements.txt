@@ -1,0 +1,12 @@
+﻿# Backend API Dependencies - Candy Shop
+# Dependências Python para a API da loja de doces
+
+# Flask: Framework web minimalista para Python
+# Versão 2.3.3 - escolhida por estabilidade e compatibilidade
+# Usado para criar endpoints REST da API
+Flask==2.3.3
+
+# Flask-CORS: Extensão para lidar com Cross-Origin Resource Sharing
+# Versão 4.0.0 - permite que o frontend acesse a API de domínios diferentes
+# Necessário para comunicação entre containers Docker
+Flask-CORS==4.0.0
