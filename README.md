@@ -137,7 +137,7 @@ DocesCloudAWS/
 │   ├── Dockerfile
 │   └── static/
 ├── README.md
-└── docker-compose.yml
+
 ```
 
 ***
