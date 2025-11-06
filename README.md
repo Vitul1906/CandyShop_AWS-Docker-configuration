@@ -1,9 +1,4 @@
 # CandyShop_AWS-Docker-configuration
-Claro! Aqui está um **documento modelo** detalhado, explicativo e didático sobre o projeto de loja de doces ("Candy Shop") em AWS, com Docker, Flask, EC2, RDS, Lambda e API Gateway.
-
-***
-
-# **Candy Shop – Projeto Cloud AWS (2025)**
 
 ## **Visão Geral do Projeto**
 
