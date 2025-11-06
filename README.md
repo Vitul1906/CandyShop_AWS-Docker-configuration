@@ -1,158 +1,234 @@
-# CandyShop_AWS-Docker-configuration
-
-## **Visão Geral do Projeto**
-
-O objetivo deste projeto é implementar uma arquitetura em nuvem para uma aplicação Flask de uma loja de doces ("Candy Shop"), totalmente containerizada com Docker, seguindo padrões modernos de cloud: separação de backend/frontend, banco gerenciado, utilização de Lambda Serverless e integração segura por API Gateway.  
-O projeto busca demonstrar as melhores práticas em arquitetura cloud AWS distribuída, segurança de rede, automação e escalabilidade.
 
 ***
 
-## **1. Desenvolvimento Local: App Flask + Docker**
+<div align="center">
 
-### **1.1. Estrutura Básica do Projeto**
-- Backend Python Flask: implementa API RESTful (rotas CRUD, `/report`, etc).
-- Frontend web: pode ser Flask renderizando HTML ou client SPA chamando a API backend via HTTP.
-- Repositório GitHub: organiza o código para backend e frontend de maneira independente.
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=2980B9&height=200&section=header&text=Doces%20Cloud&fontSize=50&fontColor=fff&animation=twinkling&fontAlignY=40&desc=AWS%20|%20Docker%20|%20Flask%20|%20EC2%20|%20VPC&descAlignY=60&descSize=18">
 
-### **1.2. Criação do Dockerfile**
+<p align="center">
+  <i>🍬 Uma aplicação web elegante para gerenciar doces e pedidos, implantada em nuvem AWS usando containers Docker.</i>
+</p>
 
-**Exemplo para o backend Flask:**
-```dockerfile
-FROM python:3.10
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-COPY . .
-ENV FLASK_ENV=production
-EXPOSE 25000
-CMD ["flask", "run", "--host=0.0.0.0", "--port=25000"]
+***
+
+### 📚 Projeto Acadêmico
+
+<div align="center">
+
+**Disciplina:** Serviços em Nuvem  
+**Objetivo:** Familiarização com deploy de aplicações web com Docker e AWS EC2
+
+</div>
+
+### 🌟 Funcionalidades
+
+<div align="center">
+
+| Feature | Descrição |
+|:---:|:---|
+| 🍬 | Gerenciamento de Doces |
+| 🧾 | Cadastro de Pedidos |
+| 📊 | Relatórios e Estatísticas |
+| 🌐 | API RESTful |
+| 🐳 | Containers Docker |
+| ☁️ | Deploy na Nuvem AWS |
+| 🔒 | Isolamento seguro do backend |
+| 🛡️ | Segurança de rede |
+
+</div>
+
+### 🛠️ Tecnologias
+
+<div align="center">
+  <a href="https://skillicons.dev">
+    <img src="https://skillicons.dev/icons?i=python,flask,docker,aws,html,css,js&theme=dark" />
+  </a>
+</div>
+
+### 🏗️ Arquitetura
+
 ```
-- Permite buildar o container onde for (dev, prod, AWS).
-- Remova credenciais sensíveis, usando variáveis de ambiente para conectar ao banco.
-
-### **1.3. Docker Compose**
-Se desejar subir múltiplos containers juntos:
-```yaml
-version: "3"
-services:
-  backend:
-    build: ./backend
-    ports:
-      - "25000:25000"
-    environment:
-      - DB_HOST=<rds_endpoint>
-      - DB_USER=admin
-      - DB_PASS=senha...
-  frontend:
-    build: ./frontend
-    ports:
-      - "8080:8080"
-    environment:
-      - BACKEND_HOST=<backend_private_ip>:25000
+┌─────────────────┐    ┌─────────────────┐
+│   Frontend      │    │    Backend      │
+│   (Porta 8080)  │◄──►│   (Porta 25000) │
+│   Subrede Públ. │    │ Subrede Privada │
+│   EC2 Instance  │    │  EC2 Instance   │
+└─────────────────┘    └─────────────────┘
+         │                        │
+         ▼                        ▼
+┌───────────────┐     ┌─────────────────┐
+│   Internet    │     │   NAT Gateway   │
+│   Gateway     │     │  (acesso temp.) │
+└───────────────┘     └─────────────────┘
 ```
 
 ***
 
-## **2. Infraestrutura AWS – Etapas e Justificativas**
+### 📋 Requisitos
 
-### **2.1. Duas Instâncias EC2 Ubuntu**
-- **Backend (privada):** responsável pela lógica e comunicação com o banco de dados. Em subnet privada, não acessível publicamente, reforçando segurança.
-- **Frontend (pública):** expõe a aplicação web ao usuário final, única diretamente pública (porta 8080 aberta).
-
-**Por quê?**  
-Separar responsabilidades e proteger recursos sensíveis. O backend só se comunica com frontend/via VPC e banco, nunca é exposto publicamente — padrão para sistemas seguros.
-
-**Passos realizados:**
-- Escolha de AMI Ubuntu minimizando vulnerabilidades.
-- Criação dos pares de chaves via AWS (SSH seguro).
-- Grupos de segurança bem delimitados (porta 22 restrita, 25000 só entre front-back, 8080 aberto).
+- ✅ Interface web Flask responsiva
+- ✅ Backend Flask API (CRUD de doces e pedidos)
+- ✅ Dockerfiles para backend e frontend
+- ✅ 2 EC2 (frontend pública, backend privada)
+- ✅ VPC com subnets, rotas e grupos de segurança corretos
+- ✅ Backend acessível só pelo frontend
+- ✅ Portas: frontend (8080), backend (25000)
+- ✅ Banco de dados RDS MySQL privado
+- ✅ Função Lambda + API Gateway para estatísticas
 
 ***
 
-### **2.2. VPC, Sub-redes e Gateways**
-- Criação de uma VPC exclusiva do projeto.
-- Subrede pública (Frontend) com Internet Gateway — permite acesso externo.
-- Subrede privada (Backend) sem Internet Gateway, apenas NAT para updates/se necessário.
-- Roteamento e gatilhos configurados para garantir isolamento.
+### 🚀 Começando
 
-**Por quê?**  
-Essencial para destacar recursos críticos (dados, lógica) do acesso público, evitar exposição.
+#### Desenvolvimento Local
 
-***
+```bash
+# Clone o projeto
+git clone https://github.com/SEU_USUARIO/DocesCloudAWS.git
+cd DocesCloudAWS
 
-### **2.3. Amazon RDS (MySQL)**
-- Instância privada, só acessível pelo backend.
-- Usuário e senha gerados/salvos na configuração do backend.
-- Sem exposição pública, grupo de segurança permite acesso somente a `candyshop-backend-sg`.
+# Suba os serviços localmente
+docker-compose up --build
 
-**Por quê?**  
-Banco gerenciado traz alta disponibilidade, backup, e elimina overhead operacional.
+# Acesse no navegador:
+# Frontend: http://localhost:8080
+# Backend API: http://localhost:25000/pedidos
+```
 
-***
+#### Deploy AWS
 
-### **2.4. Deploy Docker nas EC2**
-- SSH nas EC2, clone do GitHub.
-- Build e run dos containers frontend/backend.
-- Variáveis de ambiente exportadas antes ou direto no compose/run.
+**Backend (EC2 privada):**
+```bash
+sudo apt-get update
+sudo apt-get install -y git docker.io
+git clone https://github.com/SEU_USUARIO/DocesCloudAWS.git
+cd DocesCloudAWS/backend
+sudo docker build -t doces-backend-image .
+sudo docker run -d --name backend \
+  -e DB_HOST=<endpoint_rds> -e DB_USER=admin -e DB_PASS=suasenha \
+  -p 25000:25000 doces-backend-image
+```
 
-***
-
-### **2.5. Lambda + API Gateway**
-- Função Lambda em Python criada na mesma VPC, nas subredes privadas.
-- Código Lambda consome o endpoint `/report` do backend por HTTP, via requests.
-- API Gateway restaura padrão serverless/publicação RESTful seguro.
-- Timeout da Lambda ajustado para 29 segundos, conforme o máximo suportado pela integração do API Gateway.
-
-***
-
-### **2.6. Segurança**
-- Grupos de segurança delimitam cada papel e origem.
-- Backend/banco nunca expostos publicamente.
-- Lambda pode rodar restrita, autorizando apenas mínimo necessário.
-- Frontend exposto apenas na porta 8080.
-
-***
-
-## **3. Passo a Passo para Rodar Tudo**
-
-### **3.1. Backend (subnet privada)**
-- SSH (via bastion/front ou Session Manager).
-- `git clone` no backend/app.
-- Build Docker.
-- Export variáveis e run container.
-
-### **3.2. Frontend (subnet pública)**
-- SSH pela Internet.
-- `git clone`, build e run Docker.
-- Configure variáveis apontando para backend privado.
-
-### **3.3. Lambda e API Gateway**
-- Lambda criada/configurada no console AWS.
-- Código da Lambda faz GET no API REST `/report` do backend (ajuste IP privado).
-- API Gateway rota request externa `/report` para a função Lambda.
-- Teste com browser/curl mostrando resposta JSON da API.
+**Frontend (EC2 pública):**
+```bash
+sudo apt-get update
+sudo apt-get install -y git docker.io
+git clone https://github.com/SEU_USUARIO/DocesCloudAWS.git
+cd DocesCloudAWS/frontend
+sudo docker build -t doces-frontend-image .
+sudo docker run -d --name frontend \
+  -e BACKEND_URL="http://<IP_PRIVADO_BACKEND>:25000" \
+  -p 8080:8080 doces-frontend-image
+```
 
 ***
 
-## **4. Checklist de Requisitos Atendidos**
+### 📁 Estrutura do Projeto
 
-- [x] Backend seguro, nunca público
-- [x] Frontend acessível de fora
-- [x] RDS privado
-- [x] Lambda serverless e integração REST pelo Gateway
-- [x] Rede segmentada, grupos de segurança restrictivos
-- [x] Deploy totalmente Dockerizado (ambiente reproduzível!)
-- [x] Documentação clara do fluxo
+```
+DocesCloudAWS/
+├── backend/
+│   ├── app.py
+│   ├── requirements.txt
+│   └── Dockerfile
+├── frontend/
+│   ├── app.py
+│   ├── requirements.txt
+│   ├── Dockerfile
+│   └── static/
+├── README.md
+└── docker-compose.yml
+```
 
 ***
 
-## **Considerações Finais e Oportunidades de Extensão**
+### ☁️ Infraestrutura AWS
 
-- Você pode expandir usando pipelines CI/CD (GitHub Actions/AWS CodeBuild), adicionar monitoramento (CloudWatch), e publicar o repo/documentação para futuras turmas/projetos!
+- **VPC:** Nuvem privada virtual customizada.
+- **Subnets:** Pública (frontend) e privada (backend).
+- **EC2:** t3.micro para cada função.
+- **Security Groups:**  
+   - Frontend: 8080 aberto à Internet, 22 restrito.  
+   - Backend: 25000 aceitando conexões só do frontend.
+- **RDS MySQL:** instância privada, SG permitindo acesso só do backend.  
+- **Lambda/API Gateway:** para rota pública `/report`.
 
 ***
 
-Se algum passo ficar vago ou se quiser detalhar um trecho específico (exemplo: comandos exatos de build/run Docker, diagrama visual, snippet do código Flask, variáveis de exemplo, logs/telas de segurança, explicações para leigos), me avise!  
-Quanto mais informações personalizadas você quiser adicionar (como nomes reais de recursos, exemplos do app Flask ou prints), só dizer que ajusto o documento para a realidade do seu projeto.
+### 🛡️ Segurança
 
-[1](https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1#Instances:)
+- Backend e banco SEM IP público.
+- SG bem segmentados (acesso mínimo necessário).
+- Lambda e API Gateway integrados só à API de estatística.
+- SSH apenas por chave e limitado por IP.
+
+***
+
+### 🎯 Objetivos de Aprendizado
+
+- [x] Containerização Docker e deploy cloud
+- [x] Gestão, isolamento e roteamento AWS/VPC
+- [x] Configuração avançada de segurança em cloud
+- [x] Pipeline de deploy manual/controlado
+- [x] Backend REST seguro
+- [x] Integração Lambda serverless e exposição REST via API Gateway
+
+***
+
+### 📊 Endpoints da API
+
+| Método | Endpoint       | Descrição                      |
+|:------:|:-------------:|:-------------------------------|
+| GET    | `/produtos`   | Lista os produtos              |
+| POST   | `/pedidos`    | Cria um novo pedido            |
+| GET    | `/report`     | Retorna relatório/estatística  |
+
+***
+
+### 👣 Passo a passo do projeto (com explicações)
+
+1. **Desenvolvimento local**:  
+   - Criamos o app Flask para frontend e backend.
+   - Utilizamos Docker para garantir portabilidade e isolamento do ambiente (basta rodar `docker-compose` para simular localmente).
+
+2. **Planejamento e criação da infraestrutura AWS**:  
+   - Definimos uma VPC exclusiva, com subredes pública (frontend) e privada (backend).
+   - Criamos as instâncias EC2 conforme papel (pública e privada).
+   - Configuramos grupos de segurança para garantir acesso mínimo entre instâncias e abrir apenas o necessário para acesso do usuário final.
+
+3. **Banco de dados**:  
+   - Implantação de uma instância Amazon RDS MySQL privada, acessível somente pela EC2 backend.
+   - Garantia de segurança dos dados por isolamento de rede e regras de SG.
+
+4. **Deploy das aplicações**:  
+   - Clonamos o repositório nas EC2, buildamos as imagens Docker e rodamos containers em cada serviço.
+   - Backend comunica-se com RDS via variáveis de ambiente, frontend acessa backend por IP privado da VPC.
+
+5. **Configuração Lambda e API Gateway**:  
+   - Lambda criada em Python para consumir o endpoint `/report` do backend.
+   - API Gateway expõe rota `/report` para consumo público seguro.
+   - Timeout ajustado conforme o esperado para resposta completa.
+
+6. **Testes e validação**:  
+   - Garantimos que cada camada responde apropriadamente, endpoints seguros e recursos nunca expostos desnecessariamente.
+   - Avaliação da arquitetura, logs, e cumprimento dos requisitos acadêmicos.
+
+***
+
+### 👤 Autor
+
+<div align="center">
+  <a href="https://github.com/SEU_USUARIO" target="_blank">
+    <img src="https://skillicons.dev/icons?i=github" alt="GitHub"/>
+  </a>
+</div>
+
+### 📜 Licença
+
+Projeto sob licença MIT – veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=2980B9&height=120&section=footer"/>
+
+</div>
+
+***
